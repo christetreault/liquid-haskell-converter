@@ -1,10 +1,12 @@
-module Dmp.Parser where
+module Dmp.Parser
+(parseDmpMarkup) where
 
 import Text.ParserCombinators.Parsec
 import Data.List
 import Dmp.Parser.Tags
 import Control.Monad
 
+-- | Parses a string containig "DMP Markup"
 parseDmpMarkup :: String -> Either ParseError String
 parseDmpMarkup mu = parse pMarkupTop "" mu
 

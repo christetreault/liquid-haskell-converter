@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | This module contains "tag" definitions. If you want to implement new tags, do it in here and add
+-- your tags to the list in the tags function
 module Dmp.Parser.Tags
 (tags,
  delimiter) where
@@ -10,12 +12,15 @@ import qualified Text.Blaze.Html.Renderer.String as R
 import Text.Blaze ((!))
 import Text.ParserCombinators.Parsec
 
+-- | the delimiter that demarks the start of a Markup tag
 delimiter :: String
 delimiter = "`"
 
+-- | Helper function that encloses a passed-in string within the delimiter
 delimit :: String -> String
 delimit s = delimiter ++ s ++ delimiter
 
+-- | A list of Tag parsers
 tags :: [CharParser st String]
 tags = [pImg, pCode, pLink, pEscape, pSnippet]
 
