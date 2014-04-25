@@ -12,7 +12,7 @@ main = do argRaw <- getArgs
           case argV of Left a -> printUsage
                        Right b -> execDmpHelper b
 
--- | Executs the parser                    
+-- | Executes the parser                    
 execDmpHelper :: ArgV -> IO ()
 execDmpHelper argv = do inFile <- readFile $ inputFile argv
                         printIfV argv inFile
