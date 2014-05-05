@@ -7,7 +7,7 @@ synopsis:            Command line conversion utility. Converts "DMP Markup" to H
 -- description:         
 homepage:            doingmyprogramming.com
 license:             GPL-3
-license-file:        LICENSE
+license-file:        ../LICENSE
 author:              Chris Tetreault
 -- maintainer:          
 -- copyright:           

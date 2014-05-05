@@ -12,7 +12,7 @@ parseDmpMarkup mu = parse pMarkupTop "" mu
 
 pTokenDelimiter :: CharParser st ()
 pTokenDelimiter = pDelim <|> eof 
-            where pDelim = do lookAhead $ try $ string delimiter
+            where pDelim = do lookAhead $ try $ pMarkup--string delimiter
                               return ()
 
 pMarkupTop :: CharParser st String
@@ -31,4 +31,4 @@ pPlainText = do res <- manyTill anyChar pTokenDelimiter
                 return res
 
 pMarkup :: CharParser st String
-pMarkup = choice tags 
+pMarkup = choice tags
