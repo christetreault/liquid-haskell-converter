@@ -12,7 +12,7 @@ parseDmpMarkup mu = parse pMarkupTop "" mu
 
 pTokenDelimiter :: CharParser st ()
 pTokenDelimiter = pDelim <|> eof 
-            where pDelim = do lookAhead $ try $ pMarkup--string delimiter
+            where pDelim = do lookAhead $ try $ pMarkup
                               return ()
 
 pMarkupTop :: CharParser st String
