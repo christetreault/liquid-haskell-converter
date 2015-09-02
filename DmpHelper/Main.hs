@@ -3,7 +3,7 @@ module Main where
 import System.Environment
 import Dmp.Args
 import Dmp.Parser
-import Data.List
+import Control.Monad
 
 -- | Main. Parses arguments then calls execDmpHelper
 main :: IO ()
@@ -11,7 +11,7 @@ main = do
    argRaw <- getArgs
    let argV = parseArgV argRaw
    case argV of
-      Left a -> printUsage
+      Left _ -> printUsage
       Right b -> execDmpHelper b
 
 -- | Executes the parser
