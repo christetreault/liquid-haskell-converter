@@ -3,6 +3,7 @@ module Main where
 import System.Environment
 import Dmp.Args
 import Dmp.Parser
+import Dmp.SourceUpdate
 import Control.Monad
 
 -- | Main. Parses arguments then calls execDmpHelper
@@ -21,7 +22,9 @@ execDmpHelper argv = do
    inFile <- readFile $ inputFile argv
    printIfV argv (show argv)
    printIfV argv inFile
-   let result = parseDmpMarkup inFile
+   let result = do
+          inFile' <- updateSource inFile
+          parseDmpMarkup inFile'
    case result of Left a -> printIfV argv $ show a
                   Right b -> do
                      printIfV argv b
