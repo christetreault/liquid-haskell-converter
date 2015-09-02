@@ -1,65 +1,81 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- | This module contains "tag" definitions. If you want to implement new tags,
--- do it in here and add your tags to the list in the tags function
+-- | Convert old style comment delimiters to new style quasiquote delimiters
 module Dmp.Parser.Tags
 (tags) where
 
 import Text.ParserCombinators.Parsec
+import Data.List
 
--- | the delimiter that demarks the start of a Markup tag
+oldOpen :: String
+oldOpen = "{-@"
+
+pOldOpen :: CharParser st String
+pOldOpen = string oldOpen
+
 openDelim :: String
-openDelim = "`"
+openDelim = "[lq|"
 
--- | the delimiter that demarks the end of a Markup tag
+pOpenDelim :: CharParser st String
+pOpenDelim = string openDelim
+
+oldClose :: String
+oldClose = "@-}"
+
+pOldClose :: CharParser st String
+pOldClose = string oldClose
+
+pIs :: String -> CharParser st String
+pIs s = lookAhead $ try $ string s
+
 closeDelim :: String
-closeDelim = openDelim
+closeDelim = "|]"
 
--- | Helper function that encloses a passed-in string within the delimiter
-delimit :: String
-           -> String
-delimit s = openDelim ++ s ++ closeDelim
+pCloseDelim :: CharParser st String
+pCloseDelim = string closeDelim
+
+delimitOld :: String -> String
+delimitOld s = oldOpen ++ s ++ oldClose
+
+delimitNew :: String -> String
+delimitNew s = openDelim ++ s ++ closeDelim
 
 -- | A list of Tag parsers exported from this module
 tags :: [CharParser st String]
-tags = []
+tags = [convertOldConfig, convertOldTag]
 
-{-
-pImg :: CharParser st String
-pImg = do
-   try $ string $ delimit "img"
-   return $ R.renderHtml tImg
-   where tImg = H.img ! A.src "PLACEHOLDER"
+-- | Converts "any" old-style tag. {-@ foo @-} becomes [lq| foo |]
+convertOldTag :: CharParser st String
+convertOldTag = try $ do
+   tag <- between pOldOpen pOldClose content
+   return $ delimitNew tag
+   where
+      content = anyChar `manyTill` pIs oldClose
 
-pCode :: CharParser st String
-pCode = do
-   try $ string $ delimit "code"
-   content <- manyTill anyChar $ try $ string $ delimit "ecode"
-   return $ R.renderHtml $ tCode content
-   where tCode a =
-            H.pre ! A.class_ "code"
-            $ H.span $ H.div ! A.class_ "code"
-            $ H.code $ H.toMarkup a
-
-pLink :: CharParser st String
-pLink = do
-   try $ string $ delimit "ba"
-   pHref <- manyTill anyChar $ try $ string $ delimit "bae"
-   pLinkText <- manyTill anyChar $ try $ string $ delimit "ea"
-   return $ R.renderHtml $ tLink pHref pLinkText
-   where tLink h t =
-            H.a ! A.href (H.toValue h)
-            $ H.toMarkup t
-
-pEscape :: CharParser st String
-pEscape = do
-   try $ string $ delimit "esc"
-   toEscape <- manyTill anyChar $ try $ string $ delimit "eesc"
-   return $ R.renderHtml $ H.toMarkup toEscape
-
-pSnippet :: CharParser st String
-pSnippet = do
-   try $ string $ delimit "snip"
-   toSnippet <- manyTill anyChar $ try $ string $ delimit "esnip"
-   return $ R.renderHtml $ H.code $ H.toMarkup toSnippet
--}
+-- | Converts an old-style LH config tag: {-@ LIQUID "--foo --bar" @-}
+-- becomes [lq| config foo,bar |]
+convertOldConfig :: CharParser st String
+convertOldConfig = try $ do
+   opts <- between pOldOpen pOldClose content
+   assemble opts
+   where
+      assemble :: (Monad m) => [String] -> m String
+      assemble o = do -- TODO: for now, not modifying this until spinda implements the config tags
+         let optsStr = intercalate " --" o
+         return $ delimitOld $ " LIQUID --" ++ optsStr ++ " "
+         --let optsStr = intercalate "," o
+         --return $ delimitNew $ " config " ++ optsStr ++ " "
+      content = do
+         spaces
+         string "LIQUID"
+         spaces
+         res <- between (char '"') (char '"') options
+         spaces
+         return res
+      options = option' `manyTill` lookAhead (try $ char '"')
+      option' = do
+         spaces
+         string "--"
+         res <- anyChar `manyTill` lookAhead (try space <|> try (char '"'))
+         spaces
+         return res

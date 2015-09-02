@@ -19,6 +19,7 @@ execDmpHelper :: ArgV
                  -> IO ()
 execDmpHelper argv = do
    inFile <- readFile $ inputFile argv
+   printIfV argv (show argv)
    printIfV argv inFile
    let result = parseDmpMarkup inFile
    case result of Left a -> printIfV argv $ show a
