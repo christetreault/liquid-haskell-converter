@@ -1,5 +1,5 @@
 
-name:                Liquid Haskell Converter
+name:                lhconverter
 version:             0.1.0.1
 synopsis:            Command line conversion utility. Converts a legacy liquidhaskell markup to the new format
 -- description:

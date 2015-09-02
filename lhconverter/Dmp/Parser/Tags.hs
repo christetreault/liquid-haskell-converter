@@ -5,10 +5,6 @@
 module Dmp.Parser.Tags
 (tags) where
 
-import qualified Text.Blaze.Html5 as H
-import qualified Text.Blaze.Html5.Attributes as A
-import qualified Text.Blaze.Html.Renderer.String as R
-import Text.Blaze ((!))
 import Text.ParserCombinators.Parsec
 
 -- | the delimiter that demarks the start of a Markup tag
@@ -26,8 +22,9 @@ delimit s = openDelim ++ s ++ closeDelim
 
 -- | A list of Tag parsers exported from this module
 tags :: [CharParser st String]
-tags = [pImg, pCode, pLink, pEscape, pSnippet]
+tags = []
 
+{-
 pImg :: CharParser st String
 pImg = do
    try $ string $ delimit "img"
@@ -65,3 +62,4 @@ pSnippet = do
    try $ string $ delimit "snip"
    toSnippet <- manyTill anyChar $ try $ string $ delimit "esnip"
    return $ R.renderHtml $ H.code $ H.toMarkup toSnippet
+-}
