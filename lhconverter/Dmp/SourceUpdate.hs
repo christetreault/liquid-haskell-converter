@@ -24,8 +24,11 @@ pIsImport = lookAhead $ try $ do
    spaces
    string "import "
 
+pModuleDecl = try $ do
+   string "module"
+   anyChar `manyTill` try (string "where")
 
-pHeader = anyChar `manyTill` pIsImport
+pHeader = anyChar `manyTill` (pModuleDecl <|> pIsImport)
 
 pImports = many anyChar
 
