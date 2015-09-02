@@ -62,7 +62,7 @@ convertOldConfig = try $ do
       assemble :: (Monad m) => [String] -> m String
       assemble o = do -- TODO: for now, not modifying this until spinda implements the config tags
          let optsStr = intercalate " --" o
-         return $ delimitOld $ " LIQUID --" ++ optsStr ++ " "
+         return $ delimitOld $ " LIQUID \"--" ++ optsStr ++ "\" "
          --let optsStr = intercalate "," o
          --return $ delimitNew $ " config " ++ optsStr ++ " "
       content = do
